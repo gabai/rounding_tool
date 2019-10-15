@@ -7,71 +7,32 @@
       ret.reject();
     }
 
+	var cmp_codes = ['2345-7', '3094-0', '2160-0', '3097-3', '33914-3',
+	'50044-7',	'48642-3', '48643-1', '17861-6', '2885-2', 
+	'1751-7', '10834-0', '1759-0', '1975-2', '6768-6',
+	'1742-6', '1920-8', '2951-2', '2823-3', '2075-0',
+	'1963-8', '2028-9', '33037-3'];
+	
+	var cmp_names = ['Glucose', 'BUN', 'Creatinine', 'BUN/Creatinine', 'GFR',
+	'GFR_Females', 'GFR_Non-Blacks', 'GFR_Blacks', 'Calcium', 'Protein',
+	'Albumin', 'Globulin', 'Albumin/Globulin', 'Total_Bilirubin', 'Alkaline_Phosphatase', 
+	'Alanine_Aminotransferase', 'Aspartate_Aminotransferase', 'Sodium', 'Potassium', 'Chloride', 
+	'Bicarbonate', 'Carbon_Dioxide', 'Anion_Gap'];
+
 
     function onReady(smart)  {
       if (smart.hasOwnProperty('patient')) {
         var patient = smart.patient;
         var pt = patient.read();
-        var obv = smart.patient.api.fetchAll({
-                    type: 'Observation',
-                    query: {
-                      code: {
-                        $or: ['http://loinc.org|8302-2', 'http://loinc.org|29463-7', //height and weight
-						
-						'http://loinc.org|8462-4', 'http://loinc.org|8480-6', 'http://loinc.org|55284-4',
-						'http://loinc.org|9279-1', 'http://loinc.org|8310-5', 'http://loinc.org| 8867-4',
-						'http://loinc.org|2710-2', //vitals
-						
-						'http://loinc.org|2085-9', 'http://loinc.org|2089-1', //cholesterol, ldl
-						
-						'http://loinc.org|6298-4', 'http://loinc.org|2069-3', 'http://loinc.org|49765-1',
-						'http://loinc.org|2339-0', 'http://loinc.org|2947-0', 'http://loinc.org|26464-8',
-						'http://loinc.org|38483-4', 'http://loinc.org|718-7', 'http://loinc.org|26515-7',
-						'http://loinc.org|3094-0', 'http://loinc.org|2028-9', 'http://loinc.org|2951-2', //rounding labs
-						
-						'http://loinc.org|4548-4'] //other labs (a1c)
+        var obv = for (i in cmp_code){
+			smart.patient.api.fetchAll({
+				type: 'Observation',
+				query: {
+					code: ['http://loinc.org|'+ i + "'"]	//read lab list
                       }
                     }
                   });
-		  
-/* 	
-Vitals
-* 8302-2 Height
-* 29463-7 Weight
-	3141-9 weight
-* 9279-1 respiratory_rate
-* 8310-5 temperature
-	8480-6 Systolic blood pressure
-	8462-4 Diastolic blood pressure
-* 8867-4 heart_rate
-* 2710-2 oxygen_saturation
-
-Rounding labs (* in use)
-* 26464-8 WBC # Bld
-* 718-7 Hgb bld-mcnc
-* 26515-7 Platelet # Bld
-* 6298-4 Potassium
-	2823-3 Potassium SerPl-sCnc
-* 2069-3 Chloride
-	2075-0 Chloride SerPl-sCnc
-* 49765-1 Calcium 
-	17861-6 Calcium SerPl-mCnc
-* 2339-0 Glucose
-	2345-7 Glucose SerPl-mCnc
-* 2947-0 Sodium
-	2951-2 Sodium SerPl-sCnc
-* 38483-4 Creatinine
-	2160-0 Creat SerPl-mCnc
-* 3094-0 BUN SerPl-mCnc
-* 2028-9 CO2 SerPl-sCnc
-
-Other Labs
-* 4548-4 Hemoglobin a1c
-	1742-6 ALT SerPl-cCnc
-	789-8 RBC # Bld Auto
-	11580-8 TSH SerPl DL<=0.005 mU/L-aCnc
-	10466-1 Anion Gap3 SerPl-sCnc
-*/
+		};
 
 
 		$.when(pt, obv).fail(onError);
@@ -87,6 +48,17 @@ Other Labs
 				fname = patient.name[0].given.join(' ');
 				lname = patient.name[0].family.join(' ');
 			}
+
+			[cmp_codes, cmp_names].forEach(
+			  function (a) {
+				[0, 1].forEach(
+				  function (i) {
+					// side-effect on an array outside the function
+					lstOut[i] += a[i];
+				  }
+				);
+			  }
+			);
 
 			var height = byCodes('8302-2');
 			var weight = byCodes('29463-7');

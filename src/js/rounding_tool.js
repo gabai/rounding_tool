@@ -7,32 +7,42 @@
       ret.reject();
     }
 
+
+	var cbc = ['26464-8', '718-7', '26515-7'];
+	
+	var cbc_names = ['WBC', 'Hgb', 'Plt'];
+
+/*
 	var cmp_codes = ['2345-7', '3094-0', '2160-0', '3097-3', '33914-3',
 	'50044-7',	'48642-3', '48643-1', '17861-6', '2885-2', 
 	'1751-7', '10834-0', '1759-0', '1975-2', '6768-6',
 	'1742-6', '1920-8', '2951-2', '2823-3', '2075-0',
 	'1963-8', '2028-9', '33037-3'];
 	
+
 	var cmp_names = ['Glucose', 'BUN', 'Creatinine', 'BUN/Creatinine', 'GFR',
 	'GFR_Females', 'GFR_Non-Blacks', 'GFR_Blacks', 'Calcium', 'Protein',
 	'Albumin', 'Globulin', 'Albumin/Globulin', 'Total_Bilirubin', 'Alkaline_Phosphatase', 
 	'Alanine_Aminotransferase', 'Aspartate_Aminotransferase', 'Sodium', 'Potassium', 'Chloride', 
 	'Bicarbonate', 'Carbon_Dioxide', 'Anion_Gap'];
-
+*/
 
     function onReady(smart)  {
       if (smart.hasOwnProperty('patient')) {
         var patient = smart.patient;
         var pt = patient.read();
-        var obv = for (i in cmp_code){
+        var obv = for (i in cbc){
 			smart.patient.api.fetchAll({
 				type: 'Observation',
 				query: {
-					code: ['http://loinc.org|'+ i + "'"]	//read lab list
+					code: {
+						$or: ['http://loinc.org|/'+ i + "'"]	//read lab list
                       }
                     }
                   });
 		};
+	  };
+	};
 
 
 		$.when(pt, obv).fail(onError);
@@ -49,7 +59,7 @@
 				lname = patient.name[0].family.join(' ');
 			}
 
-			[cmp_codes, cmp_names].forEach(
+			[cbc, cbc_names].forEach(
 			  function (a) {
 				[0, 1].forEach(
 				  function (i) {
